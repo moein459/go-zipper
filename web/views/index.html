@@ -1,1 +1,48 @@
 <h1>Hello {{.World}}</h1>
+
+<div class="card">
+  <div class="card-header">Generate Zip File</div>
+  <div class="card-body">
+    <h5 class="card-title">Your zip information</h5>
+
+    <form method="POST" autocomplete="off">
+      <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">
+          File name
+        </label>
+        <input
+          type="text"
+          required
+          class="form-control"
+          id="fileName"
+          placeholder="my-file.zip"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">
+          Password
+        </label>
+        <input
+          type="password"
+          required
+          class="form-control"
+          id="password"
+          placeholder=""
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">
+          Content
+        </label>
+        <textarea
+          class="form-control"
+          id="exampleFormControlTextarea1"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <p class="card-text">Any command injection, welcome!</p>
+      <button type="submit" class="btn btn-primary">Generate Zip</button>
+    </form>
+  </div>
+</div>
