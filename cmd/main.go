@@ -19,6 +19,7 @@ var validate *validator.Validate
 
 func main() {
 	engine := html.New("./web/views", ".html")
+
 	validate = validator.New()
 	validate.RegisterValidation("fileName", func(fl validator.FieldLevel) bool {
 		match, _ := regexp.MatchString("^.*\\.(zip|ZIP)$", fl.Field().String())
@@ -29,7 +30,7 @@ func main() {
 		Views:       engine,
 		ViewsLayout: "layouts/main",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			return c.Status(fiber.StatusBadRequest).JSON(api.GlobalErrorHandlerResp{
+			return c.Status(fiber.StatusBadRequest).JSON(api.GlobalErrorHandlerResponse{
 				Success: false,
 				Message: err.Error(),
 			})
@@ -41,13 +42,13 @@ func main() {
 	})
 
 	app.Post("/", func(c *fiber.Ctx) error {
-		p := new(api.GenerateZipRequest)
+		params := new(api.GenerateZipRequest)
 
-		if err := c.BodyParser(p); err != nil {
+		if err := c.BodyParser(params); err != nil {
 			return c.Render("index", fiber.Map{"Error": err})
 		}
 
-		if err := validate.Struct(p); err != nil {
+		if err := validate.Struct(params); err != nil {
 			validationErrors := err.(validator.ValidationErrors)
 			return c.Render("index", fiber.Map{"ValidationErrors": validationErrors})
 		}
@@ -59,13 +60,13 @@ func main() {
 
 		os.Mkdir(workingDir, os.ModePerm)
 
-		contentFileName := strings.TrimSuffix(p.FileName, filepath.Ext(p.FileName)) + ".txt"
+		contentFileName := strings.TrimSuffix(params.FileName, filepath.Ext(params.FileName)) + ".txt"
 		contentFile, _ := os.Create(filepath.Join(workingDir, contentFileName))
-		contentFile.Write([]byte(p.Content))
+		contentFile.Write([]byte(params.Content))
 		defer contentFile.Close()
 
-		zipFileAddress := filepath.Join(workingDir, p.FileName)
-		cmd := exec.Command("zip", "-j", "--password", p.Password, zipFileAddress, contentFile.Name())
+		zipFileAddress := filepath.Join(workingDir, params.FileName)
+		cmd := exec.Command("zip", "-j", "--password", params.Password, zipFileAddress, contentFile.Name())
 		if err := cmd.Run(); err != nil {
 			log.Fatal(err)
 		}

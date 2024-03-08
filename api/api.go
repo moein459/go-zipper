@@ -7,7 +7,7 @@ type (
 		Content  string `validate:"required,max=100"`
 	}
 
-	GlobalErrorHandlerResp struct {
+	GlobalErrorHandlerResponse struct {
 		Success bool   `json:"success"`
 		Message string `json:"message"`
 	}
