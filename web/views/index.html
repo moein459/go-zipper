@@ -5,12 +5,15 @@
   <div class="card-body">
     <h5 class="card-title">Your zip information</h5>
 
-    <form method="POST" autocomplete="off">
+    <form method="POST" action="/" autocomplete="off">
       <div class="mb-3">
         <label for="exampleFormControlInput1" class="form-label">
           File name
         </label>
         <input
+          min="5"
+          max="20"
+          name="fileName"
           type="text"
           required
           class="form-control"
@@ -23,6 +26,9 @@
           Password
         </label>
         <input
+          min="5"
+          max="20"
+          name="password"
           type="password"
           required
           class="form-control"
@@ -35,6 +41,8 @@
           Content
         </label>
         <textarea
+          name="content"
+          required
           class="form-control"
           id="exampleFormControlTextarea1"
           rows="3"
@@ -43,6 +51,10 @@
 
       <p class="card-text">Any command injection, welcome!</p>
       <button type="submit" class="btn btn-primary">Generate Zip</button>
+
+      {{ if .ValidationErrors }} {{range $data := .ValidationErrors}}
+      <div class="my-2 alert alert-danger">{{$data}}</div>
+      {{end}} {{end}}
     </form>
   </div>
 </div>
