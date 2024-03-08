@@ -1,12 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
+	"github.com/google/uuid"
 	"github.com/moein459/go-zipper/api"
 )
 
@@ -47,8 +52,25 @@ func main() {
 			return c.Render("index", fiber.Map{"ValidationErrors": validationErrors})
 		}
 
-		fmt.Println(p.FileName)
-		return c.SendString("Validation is OK!")
+		rootFileDir := "files/"
+
+		requestId := uuid.New().String()
+		workingDir := filepath.Join(rootFileDir, requestId)
+
+		os.Mkdir(workingDir, os.ModePerm)
+
+		contentFileName := strings.TrimSuffix(p.FileName, filepath.Ext(p.FileName)) + ".txt"
+		contentFile, _ := os.Create(filepath.Join(workingDir, contentFileName))
+		contentFile.Write([]byte(p.Content))
+		defer contentFile.Close()
+
+		zipFileAddress := filepath.Join(workingDir, p.FileName)
+		cmd := exec.Command("zip", "-j", "--password", p.Password, zipFileAddress, contentFile.Name())
+		if err := cmd.Run(); err != nil {
+			log.Fatal(err)
+		}
+
+		return c.Download(zipFileAddress)
 	})
 
 	app.Listen(":3000")
