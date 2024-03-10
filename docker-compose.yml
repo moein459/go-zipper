@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  go-zipper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - "3000:3000"
+    restart: unless-stopped 
